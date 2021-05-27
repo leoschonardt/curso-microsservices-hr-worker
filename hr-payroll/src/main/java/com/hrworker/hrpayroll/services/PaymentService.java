@@ -10,22 +10,16 @@ import org.springframework.web.client.RestTemplate;
 
 import com.hrworker.hrpayroll.entities.Payment;
 import com.hrworker.hrpayroll.entities.Worker;
+import com.hrworker.hrpayroll.feignclients.WorkerFeignClient;
 
 @Service
 public class PaymentService {
 	
 	@Autowired
-	private RestTemplate restTemplate;
-	
-	@Value("${ms-worker.host}")
-	private String workerHost;
+	private WorkerFeignClient workerFeignClient;
 
 	public Payment getPayment(long workerId, int days) {
-		
-		Map<String, String> uriVariables = new HashMap<>();
-		uriVariables.put("id", workerId+"");
-		
-		Worker worker = restTemplate.getForObject(workerHost + "/workers/{id}", Worker.class, uriVariables);
+		Worker worker = workerFeignClient.findById(workerId).getBody();
 		return new Payment(worker.getName(), worker.getDailyIncome(), days);
 	}
 	
