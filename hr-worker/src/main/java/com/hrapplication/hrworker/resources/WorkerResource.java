@@ -2,6 +2,9 @@ package com.hrapplication.hrworker.resources;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,10 +18,13 @@ import com.hrapplication.hrworker.services.WorkerService;
 @RequestMapping(value = "/workers")
 public class WorkerResource {
 
+	private static Logger log = LoggerFactory.getLogger(WorkerResource.class);
 	private final WorkerService workerService;
+	private final Environment env;
 
-	public WorkerResource(WorkerService workerService) {
+	public WorkerResource(WorkerService workerService, Environment env) {
 		this.workerService = workerService;
+		this.env = env;
 	}
 	
 	@GetMapping
@@ -28,6 +34,9 @@ public class WorkerResource {
 	
 	@GetMapping(value = "/{id}")
 	public ResponseEntity<Worker> findById(@PathVariable(value = "id") long id) {
+		
+		log.info("MS-WORKER RODANDO NA PORTA " + env.getProperty("local.server.port"));
+		
 		return ResponseEntity.ok(workerService.findById(id));
 	}
 	
